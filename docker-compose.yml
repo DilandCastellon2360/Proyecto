@@ -1,0 +1,43 @@
+services:
+  web:
+    image: nginx:latest
+    container_name: web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web/proyecto:/var/www/html              
+      - ./web/nginx.conf:/etc/nginx/conf.d/default.conf  
+    depends_on:
+      - php-fpm
+    networks:
+      - webnet
+
+  php-fpm:
+    build: ./web                                 
+    container_name: php-fpm
+    volumes:
+      - ./web/proyecto:/var/www/html              
+    networks:
+      - webnet
+
+  db:
+    build: ./db
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: fdsa
+      MYSQL_DATABASE: docker_db
+      MYSQL_USER: angel
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - webnet
+
+volumes:
+  db_data:
+  web_data:
+
+networks:
+  webnet:
